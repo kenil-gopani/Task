@@ -1,10 +1,6 @@
-Certainly! Here's a professional and informative `README.md` file tailored for your GitHub repository [kenil-gopani/Task](https://github.com/kenil-gopani/Task). This template provides a clear overview of your project, its purpose, and how others can engage with it.
-
----
-
 # Task
 
-Welcome to the **Task** project! This repository is a demonstration of a simple web page, showcasing foundational web development skills using HTML. It's designed as a starting point for beginners and a refresher for seasoned developers.
+Welcome to the **Task-Maker** project! This repository is a demonstration of a simple web page, showcasing foundational web development skills using HTML. It's designed as a starting point for beginners and a refresher for seasoned developers.
 
 ## 🌐 Live Demo
 
