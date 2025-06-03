@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Task Formatter</title>
+<link rel="icon" type="image/webp" href="https://cdn-icons-png.flaticon.com/512/762/762686.png" />
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #f9f9f9;
+  }
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 1rem;
+  }
+  textarea, input[type="text"] {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    box-sizing: border-box;
+  }
+  textarea {
+    height: 100px;
+    font-family: monospace;
+  }
+  button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  pre {
+    background: #222;
+    color: #eee;
+    padding: 1rem;
+    white-space: pre-wrap;
+    margin-top: 1rem;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Format Your Task Message</h2>
+
+<form id="taskForm">
+  <label for="date">Date (dd-mm-yyyy):</label>
+  <input type="text" id="date" required />
+
+  <label for="tasks">Tasks (one per line):</label>
+  <textarea id="tasks" placeholder="e.g. jQuery Get & Set&#10;jQuery Classes & Dimension&#10;jQuery Traversing & Filtering&#10;Implemented jQUERY Filtering in table" required></textarea>
+
+  <label for="note">Additional Note:</label>
+  <textarea id="note">I am leaving for the day. 👋</textarea>
+
+  <button type="submit">Format Message</button>
+</form>
+
+<pre id="output" aria-live="polite"></pre>
+
+<script>
+  // Set today's date in dd-mm-yyyy format on page load
+  function formatDate(date) {
+    const d = date.getDate().toString().padStart(2, '0');
+    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+    const y = date.getFullYear();
+    return `${d}-${m}-${y}`;
+  }
+
+  document.getElementById('date').value = formatDate(new Date());
+
+  const form = document.getElementById('taskForm');
+  const output = document.getElementById('output');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const date = document.getElementById('date').value.trim();
+    const tasksRaw = document.getElementById('tasks').value.trim();
+    const note = document.getElementById('note').value.trim();
+
+    if (!date || !tasksRaw) {
+      output.textContent = 'Please enter date and at least one task.';
+      return;
+    }
+
+    const tasks = tasksRaw.split('\n').map(line => '- ' + line.trim()).join('\n');
+
+    let message = `Date : ${date}\n\n${tasks}`;
+    if (note) {
+      message += `\n\n${note}`;
+    }
+
+    output.textContent = message;
+  });
+</script>
+
+</body>
+</html>
