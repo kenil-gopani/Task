@@ -5,7 +5,7 @@ Welcome to the **Task-Maker** project! This repository is a demonstration of a s
 ## 🌐 Live Demo
 
 Explore the live version of the project here:
-🔗 [kenil-gopani.github.io/Task](https://kenil-gopani.github.io/Task/)
+🔗 [kenil-gopani.github.io/Task-Maker](https://kenil-gopani.github.io/Task-Maker/)
 
 ## 🛠️ Features
 
