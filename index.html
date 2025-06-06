@@ -1,50 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Task Formatter</title>
-<link rel="icon" type="image/webp" href="https://cdn-icons-png.flaticon.com/512/762/762686.png" />
-
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 1rem;
-    background: #f9f9f9;
-  }
-  label {
-    font-weight: bold;
-    display: block;
-    margin-top: 1rem;
-  }
-  textarea, input[type="text"] {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    margin-top: 0.3rem;
-    box-sizing: border-box;
-  }
-  textarea {
-    height: 100px;
-    font-family: monospace;
-  }
-  button {
-    margin-top: 1rem;
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  pre {
-    background: #222;
-    color: #eee;
-    padding: 1rem;
-    white-space: pre-wrap;
-    margin-top: 1rem;
-    border-radius: 4px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Task Formatter</title>
+  <link rel="icon" type="image/webp" href="https://cdn-icons-png.flaticon.com/512/762/762686.png" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #f9f9f9;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-top: 0.3rem;
+      box-sizing: border-box;
+    }
+    textarea {
+      height: 100px;
+      font-family: monospace;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .copy-container {
+      position: relative;
+      margin-top: 1rem;
+    }
+    #output {
+      background: #222;
+      color: #eee;
+      padding: 1rem;
+      white-space: pre-wrap;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.95rem;
+      min-height: 150px;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: white;
+    }
+    .copy-btn svg {
+      fill: #fff;
+      transition: fill 0.2s ease;
+    }
+    .copy-btn:hover svg {
+      fill: #0f0;
+    }
+    .copied-tooltip {
+      position: absolute;
+      top: -24px;
+      right: 10px;
+      background: #333;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .copied-tooltip.show {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
 
@@ -63,8 +100,19 @@
   <button type="submit">Format Message</button>
 </form>
 
-<pre id="output" aria-live="polite"></pre>
-<button id="copyBtn" style="margin-top: 0.5rem;">Copy</button>
+<div class="copy-container">
+  <pre id="output" aria-live="polite"></pre>
+  <button class="copy-btn" id="copyBtn" title="Click to copy">
+    <span id="copyIcon">
+      <!-- GitHub Copy Icon -->
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
+        <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+        <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+      </svg>
+    </span>
+  </button>
+  <div class="copied-tooltip" id="tooltip">Click to copy</div>
+</div>
 
 <script>
   // Set today's date in dd-mm-yyyy format on page load
@@ -79,6 +127,9 @@
 
   const form = document.getElementById('taskForm');
   const output = document.getElementById('output');
+  const copyBtn = document.getElementById('copyBtn');
+  const tooltip = document.getElementById('tooltip');
+  const copyIcon = document.getElementById('copyIcon');
 
   form.addEventListener('submit', e => {
     e.preventDefault();
@@ -92,11 +143,7 @@
       return;
     }
 
-    const tasks = tasksRaw
-      .split('\n')
-      .map(line => '- ' + line.trim())
-      .join('\n');
-
+    const tasks = tasksRaw.split('\n').map(line => '- ' + line.trim()).join('\n');
     let message = `Date : ${date}\n\n${tasks}`;
     if (note) {
       message += `\n\n${note}`;
@@ -105,21 +152,37 @@
     output.textContent = message;
   });
 
-  document.getElementById('copyBtn').addEventListener('click', () => {
+  copyBtn.addEventListener('click', () => {
     const text = output.textContent;
-
     if (!text.trim()) {
       alert('Nothing to copy.');
       return;
     }
 
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        alert('Formatted task message copied to clipboard!');
-      })
-      .catch(err => {
-        alert('Failed to copy: ' + err);
-      });
+    navigator.clipboard.writeText(text).then(() => {
+      tooltip.textContent = 'Copied!';
+      tooltip.classList.add('show');
+
+      copyIcon.innerHTML = `
+        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
+          <path fill="#1a8917" d="M13.78 3.22a.75.75 0 0 0-1.06 0L6.5 9.44 3.28 6.22a.75.75 0 0 0-1.06 1.06l3.75 3.75a.75.75 0 0 0 1.06 0l6.75-6.75a.75.75 0 0 0 0-1.06Z"></path>
+        </svg>
+      `;
+
+      setTimeout(() => {
+        tooltip.classList.remove('show');
+        tooltip.textContent = 'Click to copy';
+
+        copyIcon.innerHTML = `
+          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
+            <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+            <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+          </svg>
+        `;
+      }, 1500);
+    }).catch(err => {
+      alert('Copy failed: ' + err);
+    });
   });
 </script>
 
