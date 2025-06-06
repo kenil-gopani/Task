@@ -64,6 +64,7 @@
 </form>
 
 <pre id="output" aria-live="polite"></pre>
+<button id="copyBtn" style="margin-top: 0.5rem;">Copy</button>
 
 <script>
   // Set today's date in dd-mm-yyyy format on page load
@@ -91,7 +92,10 @@
       return;
     }
 
-    const tasks = tasksRaw.split('\n').map(line => '- ' + line.trim()).join('\n');
+    const tasks = tasksRaw
+      .split('\n')
+      .map(line => '- ' + line.trim())
+      .join('\n');
 
     let message = `Date : ${date}\n\n${tasks}`;
     if (note) {
@@ -99,6 +103,23 @@
     }
 
     output.textContent = message;
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const text = output.textContent;
+
+    if (!text.trim()) {
+      alert('Nothing to copy.');
+      return;
+    }
+
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        alert('Formatted task message copied to clipboard!');
+      })
+      .catch(err => {
+        alert('Failed to copy: ' + err);
+      });
   });
 </script>
 
