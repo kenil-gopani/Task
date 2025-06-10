@@ -31,7 +31,7 @@ To view or modify the project locally:
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/kenil-gopani/Task.git
+   git clone https://github.com/kenil-gopani/Task-Maker.git
    ```
 
 2. **Navigate to the project directory**:
