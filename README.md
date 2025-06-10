@@ -37,7 +37,7 @@ To view or modify the project locally:
 2. **Navigate to the project directory**:
 
    ```bash
-   cd Task
+   cd Task-Maker
    ```
 
 3. **Open `index.html` in your preferred web browser**.
