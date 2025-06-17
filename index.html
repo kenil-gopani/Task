@@ -1,304 +1,515 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Task Formatter</title>
-  <link rel="icon" type="image/webp" href="https://cdn-icons-png.flaticon.com/512/762/762686.png" />
-  
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: #f9f9f9;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 1rem;
-    }
-    textarea, input[type="text"] {
-      width: 100%;
-      padding: 0.5rem;
-      font-size: 1rem;
-      margin-top: 0.3rem;
-      box-sizing: border-box;
-    }
-    textarea {
-      height: 100px;
-      font-family: monospace;
-    }
-    button {
-      margin-top: 1rem;
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .copy-container {
-      position: relative;
-      margin-top: 1rem;
-    }
-    #output {
-      background: #222;
-      color: #eee;
-      padding: 1rem;
-      white-space: pre-wrap;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 0.95rem;
-      min-height: 150px;
-    }
-    .copy-btn {
-      position: absolute;
-      top: 0px;
-      right: -4px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: white;
-      margin-top: 5px;
-    }
-    .copy-btn svg {
-      fill: #fff;
-      transition: fill 0.2s ease;
-    }
-    .copy-btn:hover svg {
-      fill: #0f0;
-    }
-    .copied-tooltip {
-      position: absolute;
-      top: -24px;
-      right: 10px;
-      background: #333;
-      color: #fff;
-      font-size: 0.75rem;
-      padding: 4px 8px;
-      border-radius: 4px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-    .copied-tooltip.show {
-      opacity: 1;
-    }
-    /* From Uiverse.io by Awadhesh684827 */ 
-[class*="btn-glitch-"] {
-  display: inline-block;
-  font-family: "VT323", monospace;
-  border: 1px solid rgb(0, 0, 0);
-  color: rgb(0, 0, 0);
-  padding: 10px 13px;
-  min-width: 175px;
-  line-height: 1.5em;
-  white-space: no-wrap;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 15px;
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Formatter</title>
+    <link rel="icon" type="image/webp" href="https://cdn-icons-png.flaticon.com/512/762/762686.png" />
+    <!-- Google Fonts for a modern, clean look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Body and Container Styling */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font */
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); /* Soft, modern gradient background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+            color: #333;
+        }
 
-  .text,
-  .decoration {
-    display: inline-block;
-  }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
 
-  .decoration {
-    display: inline-block;
-    float: right;
-  }
+        /* Glassmorphism containers */
+        form, .copy-container {
+            background: rgba(255, 255, 255, 0.1); /* More transparent white */
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            -webkit-backdrop-filter: blur(10px); /* For Safari */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Lighter border */
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            width: 100%;
+            max-width: 550px; /* Max width for containers */
+            box-sizing: border-box;
+        }
 
-  &:hover,
-  &:focus {
-    animation-name: glitch;
-    animation-duration: 0.2s;
-    background-color: lightgreen;
-    color: black;
-    border: 1px solid lightgreen;
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 1rem;
+            color: #333;
+            text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.05);
+        }
 
-    .text-decoration {
-      animation-name: blink;
-      animation-duration: 0.1s;
-      animation-iteration-count: infinite;
-    }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.3); /* More transparent input fields */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #333;
+            transition: all 0.3s ease;
+            resize: vertical; /* Allow vertical resizing for textareas */
+        }
 
-    .decoration {
-      animation-name: blink;
-      animation-duration: 0.1s;
-      animation-iteration-count: infinite;
-    }
-  }
+        textarea:focus, input[type="text"]:focus {
+            background: rgba(255, 255, 255, 0.5); /* Still more transparent when focused */
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(100, 180, 255, 0.5);
+        }
 
-  &:active {
-    background: none;
-    color: yellow;
+        textarea {
+            min-height: 100px; /* Default height */
+            font-family: monospace;
+        }
 
-    .text-decoration {
-      animation-name: none;
-    }
+        /* Submit Button Styling - Now Glassmorphism */
+        button[type="submit"] {
+            margin-top: 1.5rem;
+            padding: 0.8rem 1.8rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2); /* Transparent white for glass effect */
+            color: #2193b0; /* Blue text to stand out */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Light transparent border */
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px); /* Apply blur */
+            -webkit-backdrop-filter: blur(5px); /* For Safari */
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
 
-    .decoration {
-      animation-name: none;
-    }
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.4); /* Slightly less transparent on hover */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            color: #1a7a92; /* Slightly darker blue on hover */
+        }
 
-    :before,
-    :after {
-      display: none;
-    }
-  }
-}
+        /* Output Area and Copy Button */
+        #output {
+            background: rgba(0, 0, 0, 0.6); /* Slightly more transparent dark background for code output */
+            color: #eee;
+            padding: 1rem;
+            white-space: pre-wrap;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            min-height: 150px;
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Lighter border */
+            overflow-x: auto; /* Enable horizontal scrolling if content is too wide */
+        }
 
-@keyframes glitch {
-  25% {
-    background-color: red;
-    transform: translateX(-10px);
-    letter-spacing: 10px;
-  }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.05); /* Even more transparent */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Lighter border */
+            border-radius: 50%; /* Circular button */
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10; /* Ensure it's above output */
+        }
 
-  35% {
-    background-color: green;
-    transform: translate(10px);
-  }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.15); /* Slightly less transparent on hover */
+            transform: scale(1.05);
+        }
 
-  59% {
-    opacity: 0;
-  }
+        .copy-btn svg {
+            fill: #fff;
+            transition: fill 0.2s ease;
+            width: 20px;
+            height: 20px;
+        }
 
-  60% {
-    background-color: blue;
-    transform: translate(-10px);
-    filter: blur(5px);
-  }
+        .copy-btn:hover svg {
+            fill: #0f0;
+        }
 
-  100% {
-    background-color: yellow;
-    blur: (5px);
-  }
-}
+        .copied-tooltip {
+            position: absolute;
+            top: -30px;
+            right: 5px;
+            background: #333;
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, top 0.3s ease;
+            white-space: nowrap;
+            z-index: 10;
+        }
 
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
-}
+        .copied-tooltip.show {
+            opacity: 1;
+            top: -40px; /* Moves up slightly when shown */
+        }
 
-@keyframes shrink {
-  100% {
-    width: 10%;
-  }
-}
+        /* Glitch Button (from Uiverse.io by Awadhesh684827) */
+        [class*="btn-glitch-"] {
+            display: inline-block;
+            font-family: "VT323", monospace;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* More transparent border for glassmorphism */
+            color: #333; /* Softer color */
+            padding: 10px 13px;
+            min-width: 175px;
+            line-height: 1.5em;
+            white-space: nowrap;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.2); /* More transparent glassmorphism background */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-decoration: none; /* Remove underline from link */
+            margin-top: 1.5rem; /* Space from above elements */
+        }
 
-  </style>
+        [class*="btn-glitch-"] .text,
+        [class*="btn-glitch-"] .decoration {
+            display: inline-block;
+        }
+
+        [class*="btn-glitch-"] .decoration {
+            float: right;
+        }
+
+        [class*="btn-glitch-"]:hover,
+        [class*="btn-glitch-"]:focus {
+            animation-name: glitch;
+            animation-duration: 0.2s;
+            background-color: #90ee90; /* Light green on hover */
+            color: black;
+            border: 1px solid #90ee90;
+        }
+
+        [class*="btn-glitch-"] .text-decoration,
+        [class*="btn-glitch-"] .decoration {
+            transition: none; /* Prevent transition interference with glitch animation */
+        }
+
+        [class*="btn-glitch-"]:hover .text-decoration,
+        [class*="btn-glitch-"]:hover .decoration {
+            animation-name: blink;
+            animation-duration: 0.1s;
+            animation-iteration-count: infinite;
+        }
+
+        [class*="btn-glitch-"]:active {
+            background: none;
+            color: yellow;
+        }
+
+        [class*="btn-glitch-"]:active .text-decoration,
+        [class*="btn-glitch-"]:active .decoration {
+            animation-name: none;
+        }
+
+        @keyframes glitch {
+            25% { transform: translateX(-5px); letter-spacing: 5px; } /* Adjusted for subtlety */
+            35% { transform: translate(5px); }
+            59% { opacity: 0; }
+            60% { background-color: #6495ed; transform: translate(-5px); filter: blur(2px); } /* Steelblue */
+            100% { background-color: #ffd700; filter: blur(0px); } /* Gold */
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Message Box for alerts (instead of alert()) */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .message-box.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Format Your Task Message</h2>
+    <h2>Format Your Task Message</h2>
 
-<form id="taskForm">
-  <label for="date">Date (dd-mm-yyyy):</label>
-  <input type="text" id="date" required />
+    <form id="taskForm">
+        <label for="date">Date (dd-mm-yyyy):</label>
+        <input type="text" id="date" required />
 
-  <label for="tasks">Tasks (one per line):</label>
-  <textarea id="tasks" placeholder="e.g. jQuery Get & Set&#10;jQuery Classes & Dimension&#10;jQuery Traversing & Filtering&#10;Implemented jQUERY Filtering in table" required></textarea>
+        <label for="tasks">Tasks (one per line):</label>
+        <textarea id="tasks" placeholder="e.g. jQuery Get & Set&#10;jQuery Classes & Dimension&#10;jQuery Traversing & Filtering&#10;Implemented jQUERY Filtering in table" required></textarea>
 
-  <label for="note">Additional Note:</label>
-  <textarea id="note">I am leaving for the day. 👋</textarea>
+        <label for="note">Additional Note:</label>
+        <textarea id="note">I am leaving for the day. 👋</textarea>
 
-  <button type="submit">Format Message</button>
-</form>
+        <button type="submit">Format Message</button>
+    </form>
 
-<div class="copy-container">
-  <pre id="output" aria-live="polite"></pre>
-  <button class="copy-btn" id="copyBtn" title="Click to copy">
-    <span id="copyIcon">
-      <!-- GitHub Copy Icon -->
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
-        <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
-        <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-      </svg>
-    </span>
-  </button>
-  <div class="copied-tooltip" id="tooltip">Click to copy</div>
-</div>
- 
+    <div class="copy-container">
+        <pre id="output" aria-live="polite">Formatted message will appear here.</pre>
+        <button class="copy-btn" id="copyBtn" title="Click to copy">
+            <span id="copyIcon">
+                <!-- GitHub Copy Icon -->
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
+                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+                </svg>
+            </span>
+        </button>
+        <div class="copied-tooltip" id="tooltip">Click to copy</div>
+    </div>
 
- <a class="btn-glitch-fill" onclick="window.open('https://github.com/kenil-gopani/Task-Maker', '_blank')">
-  <span class="text">// Get Source Code</span><span class="text-decoration"> _</span
-  ><span class="decoration">⇒</span>
-</a>
+    <a class="btn-glitch-fill" onclick="window.open('https://github.com/kenil-gopani/Task-Maker', '_blank')">
+        <span class="text">// Get Source Code</span><span class="text-decoration"> _</span
+        ><span class="decoration">⇒</span>
+    </a>
+
+    <!-- Custom Message Box -->
+    <div id="messageBox" class="message-box"></div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-task-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db;
+        let auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        // Function to display custom messages (replaces alert())
+        function showMessage(message, duration = 2000) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, duration);
+        }
+
+        // Initialize Firebase and set up authentication
+        async function initializeFirebase() {
+            if (firebaseConfig) {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log('Firebase user authenticated:', userId);
+                        isAuthReady = true;
+                        // Load tasks once authenticated
+                        loadTasksFromFirestore();
+                    } else {
+                        // Sign in anonymously if no user is found
+                        try {
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            console.error('Firebase authentication failed:', error);
+                            showMessage('Failed to sign in. Please try again.');
+                        }
+                    }
+                });
+            } else {
+                console.warn('Firebase config not found. Data persistence will not work.');
+                showMessage('Firebase is not configured. Tasks will not be saved.');
+            }
+        }
+
+        // Firestore reference for user-specific tasks
+        function getTasksDocRef() {
+            if (!db || !userId) {
+                console.error('Firestore or User ID not ready.');
+                return null;
+            }
+            // Private data storage path: /artifacts/{appId}/users/{userId}/{your_collection_name}/{documentId}
+            return doc(db, `artifacts/${appId}/users/${userId}/tasks`, 'currentTasks');
+        }
+
+        // Function to save tasks to Firestore
+        async function saveTasksToFirestore(tasksContent) {
+            if (!isAuthReady || !db || !userId) {
+                console.warn('Cannot save tasks: Authentication not ready or user ID missing.');
+                showMessage('Not ready to save tasks. Please wait or refresh.');
+                return;
+            }
+            const tasksDocRef = getTasksDocRef();
+            if (!tasksDocRef) return;
+
+            try {
+                // Store tasks as a single string
+                await setDoc(tasksDocRef, { content: tasksContent });
+                console.log('Tasks saved to Firestore successfully!');
+            } catch (error) {
+                console.error('Error saving tasks to Firestore:', error);
+                showMessage('Failed to save tasks: ' + error.message);
+            }
+        }
+
+        // Function to load tasks from Firestore using onSnapshot
+        async function loadTasksFromFirestore() {
+            if (!isAuthReady || !db || !userId) {
+                console.warn('Cannot load tasks: Authentication not ready or user ID missing.');
+                return;
+            }
+            const tasksDocRef = getTasksDocRef();
+            if (!tasksDocRef) return;
+
+            // Use onSnapshot for real-time updates and initial load
+            onSnapshot(tasksDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && data.content) {
+                        document.getElementById('tasks').value = data.content;
+                        console.log('Tasks loaded from Firestore:', data.content);
+                    }
+                } else {
+                    console.log('No tasks found in Firestore.');
+                    document.getElementById('tasks').value = ''; // Clear if no tasks
+                }
+            }, (error) => {
+                console.error('Error listening to tasks:', error);
+                showMessage('Failed to load tasks: ' + error.message);
+            });
+        }
 
 
-<script>
-  // Set today's date in dd-mm-yyyy format on page load
-  function formatDate(date) {
-    const d = date.getDate().toString().padStart(2, '0');
-    const m = (date.getMonth() + 1).toString().padStart(2, '0');
-    const y = date.getFullYear();
-    return `${d}-${m}-${y}`;
-  }
+        // --- Existing JavaScript Logic ---
+        function formatDate(date) {
+            const d = date.getDate().toString().padStart(2, '0');
+            const m = (date.getMonth() + 1).toString().padStart(2, '0');
+            const y = date.getFullYear();
+            return `${d}-${m}-${y}`;
+        }
 
-  document.getElementById('date').value = formatDate(new Date());
+        document.getElementById('date').value = formatDate(new Date());
 
-  const form = document.getElementById('taskForm');
-  const output = document.getElementById('output');
-  const copyBtn = document.getElementById('copyBtn');
-  const tooltip = document.getElementById('tooltip');
-  const copyIcon = document.getElementById('copyIcon');
+        const form = document.getElementById('taskForm');
+        const output = document.getElementById('output');
+        const copyBtn = document.getElementById('copyBtn');
+        const tooltip = document.getElementById('tooltip');
+        const copyIcon = document.getElementById('copyIcon');
+        const tasksTextarea = document.getElementById('tasks'); // Get reference to tasks textarea
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
 
-    const date = document.getElementById('date').value.trim();
-    const tasksRaw = document.getElementById('tasks').value.trim();
-    const note = document.getElementById('note').value.trim();
+        form.addEventListener('submit', async e => {
+            e.preventDefault();
 
-    if (!date || !tasksRaw) {
-      output.textContent = 'Please enter date and at least one task.';
-      return;
-    }
+            const date = document.getElementById('date').value.trim();
+            const tasksRaw = tasksTextarea.value.trim(); // Use tasksTextarea
+            const note = document.getElementById('note').value.trim();
 
-    const tasks = tasksRaw.split('\n').map(line => '- ' + line.trim()).join('\n');
-    let message = `Date : ${date}\n\n${tasks}`;
-    if (note) {
-      message += `\n\n${note}`;
-    }
+            if (!date || !tasksRaw) {
+                output.textContent = 'Please enter date and at least one task.';
+                return;
+            }
 
-    output.textContent = message;
-  });
+            const tasks = tasksRaw.split('\n').map(line => '- ' + line.trim()).join('\n');
+            let message = `Date : ${date}\n\n${tasks}`;
+            if (note) {
+                message += `\n\n${note}`;
+            }
 
-  copyBtn.addEventListener('click', () => {
-    const text = output.textContent;
-    if (!text.trim()) {
-      alert('Nothing to copy.');
-      return;
-    }
+            output.textContent = message;
 
-    navigator.clipboard.writeText(text).then(() => {
-      tooltip.textContent = 'Copied!';
-      tooltip.classList.add('show');
+            // Save tasks to Firestore after formatting
+            await saveTasksToFirestore(tasksRaw);
+        });
 
-      copyIcon.innerHTML = `
-        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
-          <path fill="#1a8917" d="M13.78 3.22a.75.75 0 0 0-1.06 0L6.5 9.44 3.28 6.22a.75.75 0 0 0-1.06 1.06l3.75 3.75a.75.75 0 0 0 1.06 0l6.75-6.75a.75.75 0 0 0 0-1.06Z"></path>
-        </svg>
-      `;
+        copyBtn.addEventListener('click', () => {
+            const text = output.textContent;
+            if (!text.trim() || text.trim() === 'Formatted message will appear here.') {
+                showMessage('Nothing to copy.');
+                return;
+            }
 
-      setTimeout(() => {
-        tooltip.classList.remove('show');
-        tooltip.textContent = 'Click to copy';
+            // Use execCommand for broader compatibility within iframes
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showMessage('Copied!');
 
-        copyIcon.innerHTML = `
-          <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
-            <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
-            <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-          </svg>
-        `;
-      }, 1500);
-    }).catch(err => {
-      alert('Copy failed: ' + err);
-    });
-  });
-</script>
+                copyIcon.innerHTML = `
+                    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
+                        <path fill="#1a8917" d="M13.78 3.22a.75.75 0 0 0-1.06 0L6.5 9.44 3.28 6.22a.75.75 0 0 0-1.06 1.06l3.75 3.75a.75.75 0 0 0 1.06 0l6.75-6.75a.75.75 0 0 0 0-1.06Z"></path>
+                    </svg>
+                `;
 
+                setTimeout(() => {
+                    tooltip.classList.remove('show');
+                    tooltip.textContent = 'Click to copy'; // Reset tooltip text
+
+                    copyIcon.innerHTML = `
+                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="octicon">
+                            <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+                            <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+                        </svg>
+                    `;
+                }, 1500);
+
+            } catch (err) {
+                showMessage('Copy failed: ' + err.message);
+            } finally {
+                document.body.removeChild(textarea); // Clean up the temporary textarea
+            }
+        });
+
+        // Initialize Firebase when the window loads
+        window.onload = initializeFirebase;
+    </script>
 </body>
 </html>
