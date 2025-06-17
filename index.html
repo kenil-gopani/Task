@@ -313,9 +313,19 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Global variables provided by the Canvas environment
+        // YOUR FIREBASE CONFIGURATION - DIRECTLY INCLUDED
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOxSmfthgQpJ6ma6KyCxZiL8eILiN5guM",
+            authDomain: "taskformatterapp.firebaseapp.com",
+            projectId: "taskformatterapp",
+            storageBucket: "taskformatterapp.firebasestorage.app",
+            messagingSenderId: "502761077532",
+            appId: "1:502761077532:web:cc6cc3801c537c29efd8d9",
+            measurementId: "G-RF9FM98869"
+        };
+
+        // Global variables provided by the Canvas environment (used for app_id and initial auth token)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-task-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let db;
@@ -335,36 +345,32 @@
 
         // Initialize Firebase and set up authentication
         async function initializeFirebase() {
-            if (firebaseConfig) {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
+            // Use the directly provided firebaseConfig
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
 
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        console.log('Firebase user authenticated:', userId);
-                        isAuthReady = true;
-                        // Load tasks once authenticated
-                        loadTasksFromFirestore();
-                    } else {
-                        // Sign in anonymously if no user is found
-                        try {
-                            if (initialAuthToken) {
-                                await signInWithCustomToken(auth, initialAuthToken);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
-                        } catch (error) {
-                            console.error('Firebase authentication failed:', error);
-                            showMessage('Failed to sign in. Please try again.');
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log('Firebase user authenticated:', userId);
+                    isAuthReady = true;
+                    // Load tasks once authenticated
+                    loadTasksFromFirestore();
+                } else {
+                    // Sign in anonymously if no user is found
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
                         }
+                    } catch (error) {
+                        console.error('Firebase authentication failed:', error);
+                        showMessage('Failed to sign in. Please try again.');
                     }
-                });
-            } else {
-                console.warn('Firebase config not found. Data persistence will not work.');
-                showMessage('Firebase is not configured. Tasks will not be saved.');
-            }
+                }
+            });
         }
 
         // Firestore reference for user-specific tasks
